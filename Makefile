@@ -6,7 +6,7 @@ DEPS = wire erlmachine syn
 
 TEST_DEPS = meck
 
-dep_wire = git git@gitlab.com:tradesprocessor/wire.git
+dep_wire = git https://github.com/erlmachinedev/wire
 
 dep_erlmachine = git https://github.com/Erlmachine/erlmachine
 
