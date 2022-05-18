@@ -1,0 +1,14 @@
+.DS_Store
+.erlang.mk/
+*.beam
+Mnesia.*
+rabbitbot.d
+deps/
+ebin/
+log/
+logs/
+
+_rel/
+config/
+relx.config
+
