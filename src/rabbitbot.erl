@@ -72,7 +72,7 @@ boot() ->
             start(SN, []),
             SN
 
-      end || Serial <- range(10)
+      end || Serial <- range(5000)
     ].
 
 %%% Bot API
@@ -210,7 +210,7 @@ action(Command) ->
 
 -spec connect() -> function().
 connect() ->
-    fun (Data) -> {ok, Pid} = wire:connect(), %% wire:open(Pid),
+    fun (Data) -> {ok, Pid} = wire:connect(),  wire:open(Pid), wire:disconnect(Pid),
 
                   Data2 = var(connection, Pid, Data),
                   Data2
