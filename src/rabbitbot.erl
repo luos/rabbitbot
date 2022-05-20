@@ -33,7 +33,10 @@
 -export([vsn/0]).
 -export([description/0]).
 
+-include_lib("wire/include/wire.hrl").
+
 -include_lib("erlmachine/include/erlmachine_system.hrl").
+-include_lib("amqp_client/include/amqp_client.hrl").
 
 -type serial_no() :: binary().
 
@@ -210,7 +213,28 @@ action(Command) ->
 
 -spec connect() -> function().
 connect() ->
-    fun (Data) -> {ok, Pid} = wire:connect(),  wire:open(Pid), wire:disconnect(Pid),
+    fun (Data) -> {ok, Pid} = wire:connect(),  Wire = wire:open(Pid),
+
+                  X = <<"rabbitbot">>,
+                  T = <<"topic">>,
+
+                  K = <<"test">>,
+
+                  Method0 = #'exchange.declare'{ exchange = X, type = T },
+                  wire:call(Wire, Method0),
+
+                  Headers = [ wire:header(<<"test">>, <<"">>)
+                            ],
+
+                  Data = <<"test">>,
+
+                  Signal0 = wire:signal(Headers, Data),
+                  Signal1 = wire:content_type(Signal0, <<"text/plain">>),
+
+                  Method1 = #'basic.publish'{ 'exchange' = X, 'routing_key' = K },
+                  wire:cast(Wire, Method1, Signal1),
+
+                  wire:disconnect(Pid),
 
                   Data2 = var(connection, Pid, Data),
                   Data2
