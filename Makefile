@@ -8,10 +8,11 @@ TEST_DEPS = meck
 
 dep_wire = git https://github.com/erlmachinedev/wire
 
-dep_erlmachine = git https://github.com/Erlmachine/erlmachine
+dep_erlmachine = git https://github.com/erlmachine/erlmachine
 
 dep_syn = hex 3.2.0
 
 dep_meck = git https://github.com/eproxus/meck.git 0.9.0
 
+BUILD_DEPS += relx
 include erlang.mk
