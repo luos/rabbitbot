@@ -2,6 +2,8 @@ PROJECT = rabbitbot
 PROJECT_DESCRIPTION = "A tiny bot to run RabbitMQ commands"
 PROJECT_VERSION = 1.0.0
 
+ERLC_OPTS := $(filter-out -Werror,$(ERLC_OPTS))
+
 DEPS = wire erlmachine syn
 
 TEST_DEPS = meck

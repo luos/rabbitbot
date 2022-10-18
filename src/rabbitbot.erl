@@ -75,7 +75,7 @@ boot() ->
             start(SN, []),
             SN
 
-      end || Serial <- range(5000)
+      end || Serial <- range(50)
     ].
 
 %%% Bot API
@@ -93,12 +93,12 @@ start(SN, _Opt) ->
     %%% TODO
     %%
 
-    Commands = [ command(connect, 10),
+    Commands = [ command(connect, 10)
 
                  %% command(open, 2 * 1000),
-                 command(send, 1000)
+                 %%command(send, 1000)
 
-                 %% command(disconnect, 4 * 1000)
+                 %command(disconnect, 4 * 1000)
 
                ],
     %%Dbg = [trace, log, statistics],
@@ -213,31 +213,36 @@ action(Command) ->
 
 -spec connect() -> function().
 connect() ->
-    fun (Data) -> {ok, Pid} = wire:connect(),  Wire = wire:open(Pid),
+    fun (Data) ->
+
+		 try
+		 {ok, Pid} = wire:connect(),  Wire = wire:open(Pid),
 
                   X = <<"rabbitbot">>,
                   T = <<"topic">>,
 
-                  K = <<"test">>,
+                  %K = <<"test">>,
 
                   Method0 = #'exchange.declare'{ exchange = X, type = T },
-                  wire:call(Wire, Method0),
+		  catch wire:call(Wire, Method0),
 
-                  Headers = [ wire:header(<<"test">>, <<"">>)
-                            ],
+                  %Headers = [    ],
+                  %Data = <<"test">>,
 
-                  Data = <<"test">>,
+                  %Signal0 = wire:signal(Headers, Data),
+                  %Signal1 = wire:content_type(Signal0, <<"text/plain">>),
 
-                  Signal0 = wire:signal(Headers, Data),
-                  Signal1 = wire:content_type(Signal0, <<"text/plain">>),
+                  %Method1 = #'basic.publish'{ 'exchange' = X, 'routing_key' = K },
+                  %wire:cast(Wire, Method1, Signal1),
 
-                  Method1 = #'basic.publish'{ 'exchange' = X, 'routing_key' = K },
-                  wire:cast(Wire, Method1, Signal1),
-
-                  wire:disconnect(Pid),
+		  catch wire:disconnect(Pid),
 
                   Data2 = var(connection, Pid, Data),
                   Data2
+		  catch _:E:_ ->
+			       io:format("Error~p~n", [E]),
+				Data
+		 end
     end.
 
 -spec open() -> function().
